@@ -6,8 +6,6 @@ const fs     = require('fs');
 
 const cwd = process.cwd();
 
-utilus.path = path.join(__dirname, '../node_modules/utilus/');
-
 const render = (content, file, next, exp) => {
   const style = stylus(`${content}`).set('filename', file);
 
@@ -18,7 +16,8 @@ const render = (content, file, next, exp) => {
   style.include(nib.path).import('nib');
 
   // add utilus for easier positioning
-  style.include(utilus.path).import('utilus');
+  utilus()(style)
+  style.import('utilus');
 
   // add global styles
   style.include(path.join(cwd, 'styles'));
