@@ -79,6 +79,6 @@ const parse = (file, next, exp) => {
   });
 }
 
-module.exports = parser => {
+module.exports = server => {
   return { parse, ext: '.css' };
 }
