@@ -9,6 +9,7 @@
   "author": "Casper Seweryn <nya@wvffle.net>",
   "license": "MIT",
   "dependencies": {
+    "fs-extra": "^5.0.0",
     "nib": "^1.1.2",
     "stylus": "^0.54.5",
     "utilus": "^2.0.1"

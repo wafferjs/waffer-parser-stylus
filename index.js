@@ -1,29 +1,31 @@
-const stylus = require('stylus');
-const utilus = require('utilus');
-const path   = require('path');
-const nib    = require('nib');
-const fs     = require('fs');
+const fs     = require('fs-extra')
+const stylus = require('stylus')
+const utilus = require('utilus')
+const path   = require('path')
+const nib    = require('nib')
 
 const cwd = process.cwd();
 
-const render = (content, file, next, exp) => {
-  const style = stylus(`${content}`).set('filename', file);
+const render = async (buf, file, exporting) => {
+  const style = stylus(`${buf}`)
 
-  style.set('filename', file);
-  style.set('include css', true);
+  style.set('filename', file)
+  style.set('include css', true)
 
   // add nib for css backward compatibility
-  style.include(nib.path).import('nib');
+  style.include(nib.path).import('nib')
 
   // add utilus for easier positioning
   utilus()(style)
-  style.import('utilus');
+  style.import('utilus')
 
   // add global styles
-  style.include(path.join(cwd, 'styles'));
+  style.include(path.join(cwd, 'styles'))
 
-  const p = file.substr(cwd.length + 1);
+  const p = file.substr(cwd.length + 1)
 
+  // TODO: fix exporting urls
+  // TODO: add tests to url function
   // we care only about views
   if (p.startsWith('views/')) {
     const div = p.substr(6).split('/styles/');
@@ -56,26 +58,14 @@ const render = (content, file, next, exp) => {
   }
 
 
-  style.render((err, css) => {
-    if (err) {
-      return next(err, `/**\n${err.message}*/`);
-    }
-
-    next(err, css);
-  });
+  return await new Promise((f, r) => style.render((err, css) => err ? r(err) : f(css)))
 };
 
-const parse = (file, next, exp) => {
-  fs.readFile(file, function(err, content) {
-    const f = file.substr(cwd.length + 7).split('/public/').pop();
-    if (err) return fs.readFile(path.join(cwd, 'styles', f), function(err, content) {
-      if (err) return next(err);
+const parse = async (file, exporting) => {
+  const buf = await fs.readFile(file)
+  const css = await render(buf, file, exporting)
 
-      render(content, file, next, exp);
-    });
-
-    render(content, file, next, exp);
-  });
+  return { content: css }
 }
 
 module.exports = server => {
