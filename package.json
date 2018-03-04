@@ -1,6 +1,6 @@
 {
   "name": "waffer-parser-stylus",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "stylus parser for waffer",
   "main": "index.js",
   "scripts": {
