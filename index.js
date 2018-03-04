@@ -6,8 +6,8 @@ const nib    = require('nib')
 
 const cwd = process.cwd();
 
-const render = async (buf, file, exporting) => {
-  const style = stylus(`${buf}`)
+const render = async (buf, file, exporting, options) => {
+  const style = stylus(`${buf}`, options)
 
   style.set('filename', file)
   style.set('include css', true)
@@ -61,9 +61,9 @@ const render = async (buf, file, exporting) => {
   return await new Promise((f, r) => style.render((err, css) => err ? r(err) : f(css)))
 };
 
-const parse = async (file, exporting) => {
+const parse = async (file, exporting, options) => {
   const buf = await fs.readFile(file)
-  const css = await render(buf, file, exporting)
+  const css = await render(buf, file, exporting, options)
 
   return { content: css }
 }
